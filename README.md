@@ -51,7 +51,7 @@ This project uses Ansible to automate the installation and configuration of web 
 ### 6. Running the Revert Playbook
 - Executed the revert playbook using the command:
   ```bash
-  ansible-playbook revert_play.yaml
+  ansible-playbook revert-play.yaml
 ## **Conclusion**
 This project effectively demonstrates the use of Ansible for automating the deployment and management of web servers. The playbooks can be reused and modified for different server configurations or additional applications.
 
