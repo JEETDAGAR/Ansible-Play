@@ -1,0 +1,32 @@
+---
+- name: Uninstall Web Servers and Remove Index Pages
+  hosts: server1,server2
+  become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python2
+  tasks:
+    # Tasks for server1 (nginx)
+    - name: Remove nginx on server1
+      yum:
+        name: nginx
+        state: absent
+      when: "'server1' in inventory_hostname"
+
+    - name: Remove index.html for nginx on server1
+      file:
+        path: /usr/share/nginx/html/index.html
+        state: absent
+      when: "'server1' in inventory_hostname"
+
+    # Tasks for server2 (Apache)
+    - name: Remove httpd (Apache) on server2
+      yum:
+        name: httpd
+        state: absent
+      when: "'server2' in inventory_hostname"
+
+    - name: Remove index.html for httpd on server2
+      file:
+        path: /var/www/html/index.html
+        state: absent
+      when: "'server2' in inventory_hostname"

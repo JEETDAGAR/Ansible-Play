@@ -1,0 +1,74 @@
+---
+- name: Install Web Servers and Configure Index Pages
+  hosts: server1,server2
+  become: yes
+  remote_user: ec2-user
+  vars:
+    ansible_python_interpreter: /usr/bin/python2
+  tasks:
+    # Tasks for server1 (nginx on Amazon Linux 2)
+    - name: Install nginx on Amazon Linux 2
+      block:
+        - name: Install amazon-linux-extras
+          yum:
+            name: amazon-linux-extras
+            state: present
+        - name: Enable nginx through amazon-linux-extras
+          command: amazon-linux-extras enable nginx1
+        - name: Install nginx
+          yum:
+            name: nginx
+            state: present
+      when: "'server1' in inventory_hostname"
+
+    - name: Enable and start nginx on server1
+      systemd:
+        name: nginx
+        enabled: yes
+        state: started
+      when: "'server1' in inventory_hostname"
+
+    # Tasks for server2 (Apache)
+    - name: Install httpd (Apache) on server2
+      yum:
+        name: httpd
+        state: latest
+      when: "'server2' in inventory_hostname"
+
+    - name: Enable and start httpd on server2
+      systemd:
+        name: httpd
+        enabled: yes
+        state: started
+      when: "'server2' in inventory_hostname"
+
+    # Configure index pages
+    - name: Create index.html for nginx on server1
+      copy:
+        dest: /usr/share/nginx/html/index.html
+        content: |
+          <html>
+            <head>
+              <title>NGINX Server 1</title>
+            </head>
+            <body>
+              <h1>NGINX Server 1</h1>
+              <p>Hello from JEET DAGAR</p>
+            </body>
+          </html>
+      when: "'server1' in inventory_hostname"
+
+    - name: Create index.html for httpd on server2
+      copy:
+        dest: /var/www/html/index.html
+        content: |
+          <html>
+            <head>
+              <title>Apache Server 2</title>
+            </head>
+            <body>
+              <h1>Apache Server 2</h1>
+              <p>Hello from JEET DAGAR</p>
+            </body>
+          </html>
+      when: "'server2' in inventory_hostname"
